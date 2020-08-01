@@ -12,7 +12,10 @@
     "fix:default": "sed -i 's/({})/({}).default/' index.js && sed -i 's/({})/({}).default/' es.js && sed -i 's/({})/({}).default/' min.js",
     "size": "cat min.js | gzip -9 | wc -c && cat min.js | brotli | wc -c && cat es.js | gzip -9 | wc -c && cat es.js | brotli | wc -c"
   },
-  "keywords": ["querySelectorAll", "MutationObserver"],
+  "keywords": [
+    "querySelectorAll",
+    "MutationObserver"
+  ],
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
@@ -31,5 +34,13 @@
     "import": "./esm/index.js",
     "default": "./cjs/index.js"
   },
-  "unpkg": "min.js"
+  "unpkg": "min.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebReflection/qsa-observer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WebReflection/qsa-observer/issues"
+  },
+  "homepage": "https://github.com/WebReflection/qsa-observer#readme"
 }
