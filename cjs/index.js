@@ -21,7 +21,7 @@ module.exports = options => {
         set.add(element);
         for (let m = matches(element), i = 0, {length} = query; i < length; i++) {
           if (m.call(element, query[i]))
-            options.handle(element, connected, query[i], i);
+            options.handle(element, connected, i);
         }
         loop(element.querySelectorAll(query), connected, query, set);
       }

@@ -32,9 +32,9 @@ const {
 
   // the method that receives all elements that match one or more
   // selectors in the query, and are either connected or disconnected
-  handle(element, connected, selector, index) {
+  handle(element, connected, index) {
     const event = connected ? 'connected' : 'disconnected';
-    console.log(element, event, selector, index);
+    console.log(element, event, query[index]);
   }
 });
 

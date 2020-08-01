@@ -30,7 +30,7 @@ self.qsaObserver = (function (exports) {
           set.add(element);
 
           for (var m = matches(element), _i = 0, _length = query.length; _i < _length; _i++) {
-            if (m.call(element, query[_i])) options.handle(element, connected, query[_i], _i);
+            if (m.call(element, query[_i])) options.handle(element, connected, _i);
           }
 
           loop(element.querySelectorAll(query), connected, query, set);
