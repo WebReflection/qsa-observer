@@ -12,6 +12,10 @@ export default options => {
       }
     }
   };
+  const drop = elements => {
+    for (let i = 0, {length} = elements; i < length; i++)
+      live.delete(elements[i]);
+  };
   const flush = () => {
     callback(observer.takeRecords());
   };
@@ -60,5 +64,5 @@ export default options => {
   observer.observe(root, {childList: true, subtree: true});
   if (query.length)
     parse(root.querySelectorAll(query));
-  return {flush, observer, parse};
+  return {drop, flush, observer, parse};
 };

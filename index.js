@@ -20,6 +20,12 @@ self.qsaObserver = (function (exports) {
       }
     };
 
+    var drop = function drop(elements) {
+      for (var i = 0, length = elements.length; i < length; i++) {
+        live["delete"](elements[i]);
+      }
+    };
+
     var flush = function flush() {
       callback(observer.takeRecords());
     };
@@ -85,6 +91,7 @@ self.qsaObserver = (function (exports) {
     });
     if (query.length) parse(root.querySelectorAll(query));
     return {
+      drop: drop,
       flush: flush,
       observer: observer,
       parse: parse
