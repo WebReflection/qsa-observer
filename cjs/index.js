@@ -18,6 +18,7 @@ module.exports = options => {
   };
   const loop = (elements, connected, query, set = new Set) => {
     for (let selectors, element, i = 0, {length} = elements; i < length; i++) {
+      // guard against repeated elements within nested querySelectorAll results
       if (!set.has(element = elements[i])) {
         set.add(element);
         if (connected) {
@@ -26,6 +27,7 @@ module.exports = options => {
               if (!live.has(element))
                 live.set(element, new Set);
               selectors = live.get(element);
+              // guard against selectors that were handled already
               if (!selectors.has(q)) {
                 selectors.add(q);
                 options.handle(element, connected, q);
@@ -33,11 +35,12 @@ module.exports = options => {
             }
           }
         }
+        // guard against elements that never became live
         else if (live.has(element)) {
           selectors = live.get(element);
           live.delete(element);
           selectors.forEach(q => {
-            options.handle(element, connected, selectors[i]);
+            options.handle(element, connected, q);
           });
         }
         loop(element.querySelectorAll(query), connected, query, set);

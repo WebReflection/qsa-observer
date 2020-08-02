@@ -28,6 +28,7 @@ self.qsaObserver = (function (exports) {
       var set = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new Set();
 
       var _loop = function _loop(_selectors, _element, i, length) {
+        // guard against repeated elements within nested querySelectorAll results
         if (!set.has(_element = elements[i])) {
           set.add(_element);
 
@@ -35,7 +36,7 @@ self.qsaObserver = (function (exports) {
             for (var q, m = matches(_element), _i = 0, _length = query.length; _i < _length; _i++) {
               if (m.call(_element, q = query[_i])) {
                 if (!live.has(_element)) live.set(_element, new Set());
-                _selectors = live.get(_element);
+                _selectors = live.get(_element); // guard against selectors that were handled already
 
                 if (!_selectors.has(q)) {
                   _selectors.add(q);
@@ -44,14 +45,15 @@ self.qsaObserver = (function (exports) {
                 }
               }
             }
-          } else if (live.has(_element)) {
-            _selectors = live.get(_element);
-            live["delete"](_element);
+          } // guard against elements that never became live
+          else if (live.has(_element)) {
+              _selectors = live.get(_element);
+              live["delete"](_element);
 
-            _selectors.forEach(function (q) {
-              options.handle(_element, connected, _selectors[i]);
-            });
-          }
+              _selectors.forEach(function (q) {
+                options.handle(_element, connected, q);
+              });
+            }
 
           loop(_element.querySelectorAll(query), connected, query, set);
         }
