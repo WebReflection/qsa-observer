@@ -22,6 +22,7 @@ const query = ['div'];
 const root = document;
 
 const {
+  drop,     // an utility to drop a list of elements from being considered live
   flush,    // an utility to flush synchronously all queued mutations
   observer, // the MutationObserver created by QSAO(...)
   parse     // an utility to parse new elements
