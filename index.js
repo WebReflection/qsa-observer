@@ -7,6 +7,8 @@ self.qsaObserver = (function (exports) {
 
   var filter = [].filter;
   var index = (function (options) {
+    var live = new WeakMap();
+
     var callback = function callback(records) {
       var query = options.query;
 
@@ -25,16 +27,41 @@ self.qsaObserver = (function (exports) {
     var loop = function loop(elements, connected, query) {
       var set = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new Set();
 
-      for (var element, i = 0, length = elements.length; i < length; i++) {
-        if (!set.has(element = elements[i])) {
-          set.add(element);
+      var _loop = function _loop(_selectors, _element, i, length) {
+        if (!set.has(_element = elements[i])) {
+          set.add(_element);
 
-          for (var m = matches(element), _i = 0, _length = query.length; _i < _length; _i++) {
-            if (m.call(element, query[_i])) options.handle(element, connected, _i);
+          if (connected) {
+            for (var q, m = matches(_element), _i = 0, _length = query.length; _i < _length; _i++) {
+              if (m.call(_element, q = query[_i])) {
+                if (!live.has(_element)) live.set(_element, new Set());
+                _selectors = live.get(_element);
+
+                if (!_selectors.has(q)) {
+                  _selectors.add(q);
+
+                  options.handle(_element, connected, q);
+                }
+              }
+            }
+          } else if (live.has(_element)) {
+            _selectors = live.get(_element);
+            live["delete"](_element);
+
+            _selectors.forEach(function (q) {
+              options.handle(_element, connected, _selectors[i]);
+            });
           }
 
-          loop(element.querySelectorAll(query), connected, query, set);
+          loop(_element.querySelectorAll(query), connected, query, set);
         }
+
+        selectors = _selectors;
+        element = _element;
+      };
+
+      for (var selectors, element, i = 0, length = elements.length; i < length; i++) {
+        _loop(selectors, element, i);
       }
     };
 
