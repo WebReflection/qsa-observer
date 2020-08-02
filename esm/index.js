@@ -2,6 +2,7 @@ const elements = element => 'querySelectorAll' in element;
 const {filter} = [];
 
 export default options => {
+  const live = new WeakMap;
   const callback = records => {
     const {query} = options;
     if (query.length) {
@@ -15,12 +16,28 @@ export default options => {
     callback(observer.takeRecords());
   };
   const loop = (elements, connected, query, set = new Set) => {
-    for (let element, i = 0, {length} = elements; i < length; i++) {
+    for (let selectors, element, i = 0, {length} = elements; i < length; i++) {
       if (!set.has(element = elements[i])) {
         set.add(element);
-        for (let m = matches(element), i = 0, {length} = query; i < length; i++) {
-          if (m.call(element, query[i]))
-            options.handle(element, connected, i);
+        if (connected) {
+          for (let q, m = matches(element), i = 0, {length} = query; i < length; i++) {
+            if (m.call(element, q = query[i])) {
+              if (!live.has(element))
+                live.set(element, new Set);
+              selectors = live.get(element);
+              if (!selectors.has(q)) {
+                selectors.add(q);
+                options.handle(element, connected, q);
+              }
+            }
+          }
+        }
+        else if (live.has(element)) {
+          selectors = live.get(element);
+          live.delete(element);
+          selectors.forEach(q => {
+            options.handle(element, connected, q);
+          });
         }
         loop(element.querySelectorAll(query), connected, query, set);
       }

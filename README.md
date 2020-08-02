@@ -6,7 +6,7 @@ Given an array of selectors, handles any matching element that was wither connec
 ### Differently from MutationObserver
 
   * each element is granted to be handled, whenever it's observed via one, or more, selectors
-  * all observed elements will pass through `handle(element, selector)` utility, per each matching selector
+  * all observed elements will pass through `handle(element, connected, selector)` utility, per each matching selector
   * elements injected through `innerHTML`, or created offline, will be handled too once live
 
 
@@ -32,9 +32,9 @@ const {
 
   // the method that receives all elements that match one or more
   // selectors in the query, and are either connected or disconnected
-  handle(element, connected, index) {
+  handle(element, connected, selector) {
     const event = connected ? 'connected' : 'disconnected';
-    console.log(element, event, query[index]);
+    console.log(element, event, selector);
   }
 });
 

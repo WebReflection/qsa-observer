@@ -28,8 +28,8 @@
 
       // the method that receives all elements that match one or more
       // selectors in the query, and are either connected or disconnected
-      handle(element, connected, index) {
-        console.log(element, connected ? 'connected' : 'disconnected', query[index]);
+      handle(element, connected, selector) {
+        console.log(element, connected ? 'connected' : 'disconnected', selector);
       }
     });
 
@@ -43,12 +43,15 @@
 
     // example: watch 'p' nodes too after a second
     setTimeout(observeMore, 1000, 'p');
+    setTimeout(observeMore, 1000, '[data-test]');
 
     setTimeout(
       () => {
         const {firstElementChild} = document.body;
+        console.log('');
         document.body.textContent = '';
         setTimeout(() => {
+          console.log('');
           document.body.appendChild(firstElementChild);
         }, 1000);
       },
@@ -59,7 +62,7 @@
 </head>
 <body>
   <div class=1>
-    <div class=2>
+    <div class=2 data-test=ok>
       <p class=1></p>
       <p class=2></p>
     </div>
