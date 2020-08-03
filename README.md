@@ -55,3 +55,10 @@ const observeMore = selector => {
 // example: watch 'p' nodes too after a second
 setTimeout(observeMore, 1000, 'p');
 ```
+
+
+### Libraries based on qsa-observer
+
+  * [as-custom-element](https://github.com/WebReflection/as-custom-element#readme)
+  * [wicked-elements](https://github.com/WebReflection/wicked-elements#readme)
+  * [hooked-elements](https://github.com/WebReflection/hooked-elements#readme)
