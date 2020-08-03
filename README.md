@@ -1,6 +1,11 @@
 # qsa-observer
 
-Given an array of selectors, handles any matching element that was wither connected, or disconnected, from an observed element, or document.
+![bird watch](./qsa-observer-head.jpg)
+
+<sup>**Social Media Photo by [Kevin Maillefer](https://unsplash.com/@kmaillefer) on [Unsplash](https://unsplash.com/)**</sup>
+
+
+Given an array of selectors, handles any matching element that was either connected, or disconnected, from an observed element, or document.
 
 
 ### Differently from MutationObserver
@@ -39,7 +44,7 @@ const {
   }
 });
 
-// example: add another selector to observe and passes through the setup
+// example: add another selector to observe and pass through the handle
 const observeMore = selector => {
   if (!query.includes(selector)) {
     query.push(selector);
