@@ -7,6 +7,7 @@ self.qsaObserver = (function (exports) {
 
   var filter = [].filter;
   var index = (function (options) {
+    var empty = new Set();
     var live = new WeakMap();
 
     var callback = function callback(records) {
@@ -33,30 +34,31 @@ self.qsaObserver = (function (exports) {
     var loop = function loop(elements, connected, query) {
       var set = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new Set();
 
-      var _loop = function _loop(_selectors, _element, i, length) {
+      var _loop = function _loop(_on, _sel, _element, i, length) {
         // guard against repeated elements within nested querySelectorAll results
         if (!set.has(_element = elements[i])) {
           set.add(_element);
+          _on = live.has(_element);
 
           if (connected) {
-            for (var q, m = matches(_element), _i = 0, _length = query.length; _i < _length; _i++) {
-              if (m.call(_element, q = query[_i])) {
-                if (!live.has(_element)) live.set(_element, new Set());
-                _selectors = live.get(_element); // guard against selectors that were handled already
-
-                if (!_selectors.has(q)) {
-                  _selectors.add(q);
-
-                  options.handle(_element, connected, q);
+            for (var q, s = _on ? live.get(_element) : empty, m = matches(_element), _i = 0, _length = query.length; _i < _length; _i++) {
+              // guard against selectors that were handled already
+              if (!s.has(q = query[_i]) && m.call(_element, q)) {
+                if (!_on) {
+                  _on = !_on;
+                  live.set(_element, s = new Set());
                 }
+
+                s.add(q);
+                options.handle(_element, connected, q);
               }
             }
           } // guard against elements that never became live
-          else if (live.has(_element)) {
-              _selectors = live.get(_element);
+          else if (_on) {
+              _sel = live.get(_element);
               live["delete"](_element);
 
-              _selectors.forEach(function (q) {
+              _sel.forEach(function (q) {
                 options.handle(_element, connected, q);
               });
             }
@@ -64,12 +66,13 @@ self.qsaObserver = (function (exports) {
           loop(_element.querySelectorAll(query), connected, query, set);
         }
 
-        selectors = _selectors;
+        on = _on;
+        sel = _sel;
         element = _element;
       };
 
-      for (var selectors, element, i = 0, length = elements.length; i < length; i++) {
-        _loop(selectors, element, i);
+      for (var on, sel, element, i = 0, length = elements.length; i < length; i++) {
+        _loop(on, sel, element, i);
       }
     };
 

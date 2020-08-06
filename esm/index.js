@@ -2,6 +2,7 @@ const elements = element => 'querySelectorAll' in element;
 const {filter} = [];
 
 export default options => {
+  const empty = new Set;
   const live = new WeakMap;
   const callback = records => {
     const {query} = options;
@@ -20,29 +21,34 @@ export default options => {
     callback(observer.takeRecords());
   };
   const loop = (elements, connected, query, set = new Set) => {
-    for (let selectors, element, i = 0, {length} = elements; i < length; i++) {
+    for (let on, sel, element, i = 0, {length} = elements; i < length; i++) {
       // guard against repeated elements within nested querySelectorAll results
       if (!set.has(element = elements[i])) {
         set.add(element);
+        on = live.has(element);
         if (connected) {
-          for (let q, m = matches(element), i = 0, {length} = query; i < length; i++) {
-            if (m.call(element, q = query[i])) {
-              if (!live.has(element))
-                live.set(element, new Set);
-              selectors = live.get(element);
-              // guard against selectors that were handled already
-              if (!selectors.has(q)) {
-                selectors.add(q);
-                options.handle(element, connected, q);
+          for (let
+            q,
+            s = on ? live.get(element) : empty,
+            m = matches(element),
+            i = 0, {length} = query; i < length; i++
+          ) {
+            // guard against selectors that were handled already
+            if (!s.has(q = query[i]) && m.call(element, q)) {
+              if (!on) {
+                on = !on;
+                live.set(element, s = new Set);
               }
+              s.add(q);
+              options.handle(element, connected, q);
             }
           }
         }
         // guard against elements that never became live
-        else if (live.has(element)) {
-          selectors = live.get(element);
+        else if (on) {
+          sel = live.get(element);
           live.delete(element);
-          selectors.forEach(q => {
+          sel.forEach(q => {
             options.handle(element, connected, q);
           });
         }
