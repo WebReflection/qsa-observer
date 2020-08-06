@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>qsa-observer</title>
+  <script type="module">
+  import(
+    /^(?:localhost|[::1]|127(?:.d+){3})$/.test(location.hostname) ?
+    '../esm/index.js' :
+    'https://unpkg.com/qsa-observer?module'
+  )
+  .then(({default: QSAO}) => {
+    let count = 59994;
+    // an Array of CSS selectors to observe
+    const query = ['div', 'p', 'span', 'a'];
+
+    // where to observe mutations, document by default
+    const root = document;
+
+    const {
+      flush,    // an utility to flush synchronously all queued mutations
+      observer, // the MutationObserver created by QSAO(...)
+      parse     // an utility to parse new elements
+                // (i.e. after adding a selector to the query list)
+    } = QSAO({
+      query,  // list of selectors to observe
+      root,   // optional, as it's document by default
+
+      // the method that receives all elements that match one or more
+      // selectors in the query, and are either connected or disconnected
+      handle(element, connected) {
+        if (!--count) {
+          console.timeEnd('benchmark');
+          if (connected) {
+            count = 59994;
+            document.body.innerHTML = '';
+            console.time('benchmark');
+          }
+        }
+      }
+    });
+
+    // example: add another selector to observe and passes through the setup
+    const observeMore = selector => {
+      if (!query.includes(selector)) {
+        query.push(selector);
+        parse(root.querySelectorAll(selector));
+      }
+    };
+
+    document.body.innerHTML = Array(10000).join('<div><span></span><p><span></span><a></a></p></div><span></span>');
+    console.time('benchmark');
+
+  });
+  </script>
+</head>
+<body></body>
+</html>
