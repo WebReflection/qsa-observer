@@ -59,6 +59,7 @@ setTimeout(observeMore, 1000, 'p');
 
 ### Libraries based on qsa-observer
 
+  * [custom-elements-ie](https://github.com/WebReflection/custom-elements-ie#readme)
   * [custom-elements-builtin](https://github.com/WebReflection/custom-elements-builtin#readme)
   * [as-custom-element](https://github.com/WebReflection/as-custom-element#readme)
   * [wicked-elements](https://github.com/WebReflection/wicked-elements#readme)
