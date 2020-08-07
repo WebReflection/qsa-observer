@@ -1,6 +1,12 @@
 self.qsaObserver = (function (exports) {
   'use strict';
 
+  var _self = self,
+      document = _self.document,
+      MutationObserver = _self.MutationObserver,
+      Set = _self.Set,
+      WeakMap = _self.WeakMap;
+
   var elements = function elements(element) {
     return 'querySelectorAll' in element;
   };

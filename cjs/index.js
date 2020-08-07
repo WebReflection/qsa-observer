@@ -1,4 +1,6 @@
 'use strict';
+const {document, MutationObserver, Set, WeakMap} = self;
+
 const elements = element => 'querySelectorAll' in element;
 const {filter} = [];
 
