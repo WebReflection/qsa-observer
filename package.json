@@ -1,6 +1,6 @@
 {
   "name": "qsa-observer",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "handle elements lifecycle through CSS selectors",
   "main": "./cjs/index.js",
   "scripts": {
