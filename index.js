@@ -67,7 +67,7 @@ self.qsaObserver = (function (exports) {
               });
             }
 
-          loop(_element.querySelectorAll(query), connected, query, set);
+          loop(querySelectorAll(_element), connected, query, set);
         }
 
         selectors = _selectors;
@@ -88,6 +88,10 @@ self.qsaObserver = (function (exports) {
       loop(elements, connected, options.query);
     };
 
+    var querySelectorAll = function querySelectorAll(root) {
+      return query.length ? root.querySelectorAll(query) : query;
+    };
+
     var observer = new MutationObserver(callback);
     var root = options.root || document;
     var query = options.query;
@@ -95,7 +99,7 @@ self.qsaObserver = (function (exports) {
       childList: true,
       subtree: true
     });
-    if (query.length) parse(root.querySelectorAll(query));
+    parse(querySelectorAll(root));
     return {
       drop: drop,
       flush: flush,

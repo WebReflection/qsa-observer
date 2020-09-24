@@ -48,7 +48,7 @@ export default options => {
             options.handle(element, connected, q);
           });
         }
-        loop(element.querySelectorAll(query), connected, query, set);
+        loop(querySelectorAll(element), connected, query, set);
       }
     }
   };
@@ -60,11 +60,12 @@ export default options => {
   const parse = (elements, connected = true) => {
     loop(elements, connected, options.query);
   };
+  const querySelectorAll = root => query.length ?
+                            root.querySelectorAll(query) : query;
   const observer = new MutationObserver(callback);
   const root = options.root || document;
   const {query} = options;
   observer.observe(root, {childList: true, subtree: true});
-  if (query.length)
-    parse(root.querySelectorAll(query));
+  parse(querySelectorAll(root));
   return {drop, flush, observer, parse};
 };
