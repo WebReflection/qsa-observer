@@ -1,56 +1,24 @@
 'use strict';
+const {notify} = require('element-notifier');
+
+const QSA = 'querySelectorAll';
+
 const {document, MutationObserver, Set, WeakMap} = self;
 
-const elements = element => 'querySelectorAll' in element;
+const elements = element => QSA in element;
 const {filter} = [];
 
 module.exports = options => {
   const live = new WeakMap;
-  const callback = records => {
-    const {query} = options;
-    if (query.length) {
-      for (let i = 0, {length} = records; i < length; i++) {
-        loop(filter.call(records[i].addedNodes, elements), true, query);
-        loop(filter.call(records[i].removedNodes, elements), false, query);
-      }
-    }
-  };
   const drop = elements => {
     for (let i = 0, {length} = elements; i < length; i++)
       live.delete(elements[i]);
   };
   const flush = () => {
-    callback(observer.takeRecords());
-  };
-  const loop = (elements, connected, query, set = new Set) => {
-    for (let selectors, element, i = 0, {length} = elements; i < length; i++) {
-      // guard against repeated elements within nested querySelectorAll results
-      if (!set.has(element = elements[i])) {
-        set.add(element);
-        if (connected) {
-          for (let q, m = matches(element), i = 0, {length} = query; i < length; i++) {
-            if (m.call(element, q = query[i])) {
-              if (!live.has(element))
-                live.set(element, new Set);
-              selectors = live.get(element);
-              // guard against selectors that were handled already
-              if (!selectors.has(q)) {
-                selectors.add(q);
-                options.handle(element, connected, q);
-              }
-            }
-          }
-        }
-        // guard against elements that never became live
-        else if (live.has(element)) {
-          selectors = live.get(element);
-          live.delete(element);
-          selectors.forEach(q => {
-            options.handle(element, connected, q);
-          });
-        }
-        loop(querySelectorAll(element), connected, query, set);
-      }
+    const records = observer.takeRecords();
+    for (let i = 0, {length} = records; i < length; i++) {
+      parse(filter.call(records[i].removedNodes, elements), false);
+      parse(filter.call(records[i].addedNodes, elements), true);
     }
   };
   const matches = element => (
@@ -58,15 +26,37 @@ module.exports = options => {
     element.webkitMatchesSelector ||
     element.msMatchesSelector
   );
-  const parse = (elements, connected = true) => {
-    loop(elements, connected, options.query);
+  const notifier = (element, connected) => {
+    let selectors;
+    if (connected) {
+      for (let q, m = matches(element), i = 0, {length} = query; i < length; i++) {
+        if (m.call(element, q = query[i])) {
+          if (!live.has(element))
+            live.set(element, new Set);
+          selectors = live.get(element);
+          if (!selectors.has(q)) {
+            selectors.add(q);
+            options.handle(element, connected, q);
+          }
+        }
+      }
+    }
+    else if (live.has(element)) {
+      selectors = live.get(element);
+      live.delete(element);
+      selectors.forEach(q => {
+        options.handle(element, connected, q);
+      });
+    }
   };
-  const querySelectorAll = root => query.length ?
-                            root.querySelectorAll(query) : query;
-  const observer = new MutationObserver(callback);
+  const parse = (elements, connected = true) => {
+    for (let i = 0, {length} = elements; i < length; i++)
+      notifier(elements[i], connected);
+  };
   const root = options.root || document;
   const {query} = options;
-  observer.observe(root, {childList: true, subtree: true});
-  parse(querySelectorAll(root));
+  const observer = notify(notifier, root, MutationObserver);
+  if (query.length)
+    parse(root[QSA](query));
   return {drop, flush, observer, parse};
 };
