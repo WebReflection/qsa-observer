@@ -117,8 +117,8 @@ self.qsaObserver = (function (exports) {
       }
     };
 
-    var root = options.root || document$1;
     var query = options.query;
+    var root = options.root || document$1;
     var observer = notify(notifier, root, MutationObserver$1);
     if (query.length) parse(root[QSA](query));
     return {
@@ -130,8 +130,6 @@ self.qsaObserver = (function (exports) {
   });
 
   exports.default = index;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
 
   return exports;
 

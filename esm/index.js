@@ -52,8 +52,8 @@ export default options => {
     for (let i = 0, {length} = elements; i < length; i++)
       notifier(elements[i], connected);
   };
-  const root = options.root || document;
   const {query} = options;
+  const root = options.root || document;
   const observer = notify(notifier, root, MutationObserver);
   if (query.length)
     parse(root[QSA](query));
