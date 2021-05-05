@@ -60,6 +60,7 @@ self.qsaObserver = (function (exports) {
   var QSA = 'querySelectorAll';
   var _self = self,
       document$1 = _self.document,
+      Element = _self.Element,
       MutationObserver$1 = _self.MutationObserver,
       Set$1 = _self.Set,
       WeakMap = _self.WeakMap;
@@ -126,6 +127,12 @@ self.qsaObserver = (function (exports) {
     var query = options.query;
     var root = options.root || document$1;
     var observer = notify(notifier, root, MutationObserver$1);
+    var attachShadow = Element.prototype.attachShadow;
+    if (attachShadow) Element.prototype.attachShadow = function (init) {
+      var shadowRoot = attachShadow.call(this, init);
+      observer.add(shadowRoot);
+      return shadowRoot;
+    };
     if (query.length) parse(root[QSA](query));
     return {
       drop: drop,

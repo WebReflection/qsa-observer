@@ -2,7 +2,7 @@ import {notify} from 'element-notifier';
 
 const QSA = 'querySelectorAll';
 
-const {document, MutationObserver, Set, WeakMap} = self;
+const {document, Element, MutationObserver, Set, WeakMap} = self;
 
 const elements = element => QSA in element;
 const {filter} = [];
@@ -55,6 +55,13 @@ export default options => {
   const {query} = options;
   const root = options.root || document;
   const observer = notify(notifier, root, MutationObserver);
+  const {attachShadow} = Element.prototype;
+  if (attachShadow)
+    Element.prototype.attachShadow = function (init) {
+      const shadowRoot = attachShadow.call(this, init);
+      observer.add(shadowRoot);
+      return shadowRoot;
+    };
   if (query.length)
     parse(root[QSA](query));
   return {drop, flush, observer, parse};
