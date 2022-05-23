@@ -9,10 +9,7 @@ export default {
   ],
 
   output: {
-    esModule: false,
-    exports: 'named',
-    file: './es.js',
-    format: 'iife',
-    name: 'qsaObserver'
+    file: './esm.js',
+    format: 'module'
   }
 };

@@ -55,7 +55,7 @@ module.exports = options => {
   };
   const {query} = options;
   const root = options.root || document;
-  const observer = notify(notifier, root, MutationObserver);
+  const observer = notify(notifier, root, MutationObserver, query);
   const {attachShadow} = Element.prototype;
   if (attachShadow)
     Element.prototype.attachShadow = function (init) {
