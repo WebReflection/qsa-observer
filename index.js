@@ -110,7 +110,7 @@ self.qsaObserver = (function (exports) {
     if (attachShadow)
       Element.prototype.attachShadow = function (init) {
         const shadowRoot = attachShadow.call(this, init);
-        observer.add(shadowRoot);
+        observer.observe(shadowRoot);
         return shadowRoot;
       };
     if (query.length)
