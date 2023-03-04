@@ -19,10 +19,10 @@
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-terser": "^0.4.0",
     "ascjs": "^5.0.1",
-    "rollup": "^2.75.5",
-    "rollup-plugin-terser": "^7.0.2"
+    "rollup": "^3.18.0"
   },
   "module": "./esm/index.js",
   "type": "module",
@@ -43,6 +43,6 @@
   },
   "homepage": "https://github.com/WebReflection/qsa-observer#readme",
   "dependencies": {
-    "element-notifier": "^1.1.1"
+    "element-notifier": "^1.1.2"
   }
 }

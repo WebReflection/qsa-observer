@@ -118,7 +118,7 @@ self.qsaObserver = (function (exports) {
     return {drop, flush, observer, parse};
   };
 
-  exports["default"] = index;
+  exports.default = index;
 
   return exports;
 
