@@ -1,6 +1,6 @@
 {
   "name": "qsa-observer",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "handle elements lifecycle through CSS selectors",
   "main": "./cjs/index.js",
   "scripts": {
@@ -19,10 +19,10 @@
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-terser": "^0.4.0",
-    "ascjs": "^5.0.1",
-    "rollup": "^3.18.0"
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
+    "ascjs": "^6.0.3",
+    "rollup": "^4.60.2"
   },
   "module": "./esm/index.js",
   "type": "module",

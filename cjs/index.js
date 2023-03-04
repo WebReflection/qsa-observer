@@ -1,22 +1,22 @@
 'use strict';
-const {notify} = require('element-notifier');
+const { notify } = require('element-notifier');
 
 const QSA = 'querySelectorAll';
 
-const {document, Element, MutationObserver, Set, WeakMap} = self;
+const { document, Element, MutationObserver, Set, WeakMap } = self;
 
 const elements = element => QSA in element;
-const {filter} = [];
+const { filter } = [];
 
 module.exports = options => {
   const live = new WeakMap;
   const drop = elements => {
-    for (let i = 0, {length} = elements; i < length; i++)
+    for (let i = 0; i < elements.length; i++)
       live.delete(elements[i]);
   };
   const flush = () => {
     const records = observer.takeRecords();
-    for (let i = 0, {length} = records; i < length; i++) {
+    for (let i = 0; i < records.length; i++) {
       parse(filter.call(records[i].removedNodes, elements), false);
       parse(filter.call(records[i].addedNodes, elements), true);
     }
@@ -29,7 +29,7 @@ module.exports = options => {
   const notifier = (element, connected) => {
     let selectors;
     if (connected) {
-      for (let q, m = matches(element), i = 0, {length} = query; i < length; i++) {
+      for (let q, m = matches(element), i = 0; i < query.length; i++) {
         if (m.call(element, q = query[i])) {
           if (!live.has(element))
             live.set(element, new Set);
@@ -50,13 +50,13 @@ module.exports = options => {
     }
   };
   const parse = (elements, connected = true) => {
-    for (let i = 0, {length} = elements; i < length; i++)
+    for (let i = 0; i < elements.length; i++)
       notifier(elements[i], connected);
   };
-  const {query} = options;
+  const query = options.query;
   const root = options.root || document;
   const observer = notify(notifier, root, MutationObserver, query);
-  const {attachShadow} = Element.prototype;
+  const attachShadow = Element.prototype.attachShadow;
   if (attachShadow)
     Element.prototype.attachShadow = function (init) {
       const shadowRoot = attachShadow.call(this, init);
@@ -65,5 +65,5 @@ module.exports = options => {
     };
   if (query.length)
     parse(root[QSA](query));
-  return {drop, flush, observer, parse};
+  return { drop, flush, observer, parse };
 };
