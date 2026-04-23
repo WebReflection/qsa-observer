@@ -12,6 +12,12 @@
     "rollup:esm": "rollup --config rollup/esm.config.js",
     "size": "cat esm.js | brotli | wc -c"
   },
+  "files": [
+    "esm/",
+    "esm.js",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "querySelectorAll",
     "MutationObserver"
