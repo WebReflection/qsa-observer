@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>qsa-observer</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "element-notifier": "https://cdn.jsdelivr.net/npm/element-notifier/esm.js"
+      }
+    }
+  </script>
   <script type="module">
   import(
     /^(?:localhost|[::1]|127(?:.d+){3})$/.test(location.hostname) ?
@@ -53,6 +60,26 @@
         setTimeout(() => {
           console.log('');
           document.body.appendChild(firstElementChild);
+
+          customElements.define('x-test', class extends HTMLElement {
+            constructor(...args) {
+              super(...args);
+              this.attachShadow({ mode: 'open' });
+              this.shadowRoot.innerHTML = `
+                <style>
+                  :host {
+                    display: block;
+                    font-family: sans-serif;
+                  }
+                </style>
+                <p data-custom="element">Hello QSA 👋</p>
+              `;
+            }
+          });
+          setTimeout(() => {
+            const x = document.createElement('x-test');
+            document.body.appendChild(x);
+          }, 1000);
         }, 1000);
       },
       2000
