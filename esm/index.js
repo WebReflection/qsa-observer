@@ -1,3 +1,4 @@
+import { ShadowObserver } from 'shadow-observer';
 import { notify } from 'element-notifier';
 
 /**
@@ -17,30 +18,11 @@ import { notify } from 'element-notifier';
  *   Run the same notifier logic as for observed mutations; `connected` defaults to `true`.
  */
 
-const { document, Element, MutationObserver, Set, WeakMap } = self;
+const { document, Element, Set, WeakMap } = self;
 const { defineProperty } = Object;
 const { filter } = Array.prototype;
 
 const elements = element => 'querySelectorAll' in element;
-
-/** @type {Set<WeakRef<MutationObserver>>} */
-const observers = new Set;
-
-const { attachShadow } = Element.prototype;
-
-if (attachShadow) {
-  defineProperty(Element.prototype, 'attachShadow', {
-    value: function (init) {
-      const shadowRoot = attachShadow.call(this, init);
-      for (const wr of observers) {
-        const observer = wr.deref();
-        if (observer) observer.observe(shadowRoot);
-        else observers.delete(wr);
-      }
-      return shadowRoot;
-    }
-  });
-}
 
 /**
  * Watch `root` for nodes matching `query` and report lifecycle per selector through `handle`.
@@ -66,20 +48,15 @@ export default options => {
     }
   };
 
-  const matches = element => (
-    element.matches ||
-    element.webkitMatchesSelector ||
-    element.msMatchesSelector
-  );
-
   const notifier = (element, connected) => {
+    if (element instanceof ShadowRoot) return;
     let selectors;
     if (connected) {
-      for (let q, m = matches(element), i = 0; i < query.length; i++) {
-        if (m.call(element, q = query[i])) {
-          if (!live.has(element))
-            live.set(element, new Set);
+      for (let q, i = 0; i < query.length; i++) {
+        if (element.matches(q = query[i])) {
           selectors = live.get(element);
+          if (!selectors)
+            live.set(element, (selectors = new Set));
           if (!selectors.has(q)) {
             selectors.add(q);
             options.handle(element, connected, q);
@@ -104,8 +81,7 @@ export default options => {
   const query = options.query;
   const root = options.root || document;
 
-  const observer = notify(notifier, root, MutationObserver, query);
-  observers.add(new WeakRef(observer));
+  const observer = notify(notifier, root, ShadowObserver, query);
 
   if (query.length) {
     parse(root.querySelectorAll(query));

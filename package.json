@@ -50,6 +50,7 @@
   },
   "homepage": "https://github.com/WebReflection/qsa-observer#readme",
   "dependencies": {
-    "element-notifier": "^2.0.0"
+    "element-notifier": "^2.0.3",
+    "shadow-observer": "^0.1.7"
   }
 }
