@@ -24,11 +24,12 @@ export type QSAObserverResult = {
      */
     flush: () => void;
     /**
-     * Underlying `MutationObserver` returned by `element-notifier`'s `notify`.
+     * Underlying `ShadowObserver` returned by `element-notifier`'s `notify`.
      */
-    observer: MutationObserver;
+    observer: ShadowObserver;
     /**
      *   Run the same notifier logic as for observed mutations; `connected` defaults to `true`.
      */
     parse: (elements: ArrayLike<Element>, connected?: boolean) => void;
 };
+import { ShadowObserver } from 'shadow-observer';

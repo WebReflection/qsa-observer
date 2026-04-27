@@ -13,14 +13,10 @@ import { notify } from 'element-notifier';
  * @typedef {object} QSAObserverResult
  * @property {(elements: ArrayLike<Element>) => void} drop Forget live tracking for the given elements (no `handle` calls).
  * @property {() => void} flush Drain the observer queue synchronously via `takeRecords()` and apply connect/disconnect logic.
- * @property {MutationObserver} observer Underlying `MutationObserver` returned by `element-notifier`'s `notify`.
+ * @property {ShadowObserver} observer Underlying `ShadowObserver` returned by `element-notifier`'s `notify`.
  * @property {(elements: ArrayLike<Element>, connected?: boolean) => void} parse
  *   Run the same notifier logic as for observed mutations; `connected` defaults to `true`.
  */
-
-const { document, Element, Set, WeakMap } = self;
-const { defineProperty } = Object;
-const { filter } = Array.prototype;
 
 const elements = element => 'querySelectorAll' in element;
 
@@ -42,40 +38,43 @@ export default options => {
 
   const flush = () => {
     const records = observer.takeRecords();
-    for (let i = 0; i < records.length; i++) {
-      parse(filter.call(records[i].removedNodes, elements), false);
-      parse(filter.call(records[i].addedNodes, elements), true);
+    for (const { removedNodes, addedNodes } of records) {
+      parse(removedNodes, false);
+      parse(addedNodes, true);
     }
   };
 
   const notifier = (element, connected) => {
-    if (element instanceof ShadowRoot) return;
-    let selectors;
-    if (connected) {
-      for (let q, i = 0; i < query.length; i++) {
-        if (element.matches(q = query[i])) {
-          selectors = live.get(element);
-          if (!selectors)
-            live.set(element, (selectors = new Set));
-          if (!selectors.has(q)) {
-            selectors.add(q);
-            options.handle(element, connected, q);
+    if (element.nodeType === 1) {
+      let selectors;
+      if (connected) {
+        for (let q, i = 0; i < query.length; i++) {
+          if (element.matches(q = query[i])) {
+            selectors = live.get(element);
+            if (!selectors)
+              live.set(element, (selectors = new Set));
+            if (!selectors.has(q)) {
+              selectors.add(q);
+              options.handle(element, connected, q);
+            }
           }
         }
       }
-    }
-    else if (live.has(element)) {
-      selectors = live.get(element);
-      live.delete(element);
-      selectors.forEach(q => {
-        options.handle(element, connected, q);
-      });
+      else if (live.has(element)) {
+        selectors = live.get(element);
+        live.delete(element);
+        for (const q of selectors)
+          options.handle(element, connected, q);
+      }
     }
   };
 
   const parse = (elements, connected = true) => {
-    for (let i = 0; i < elements.length; i++)
-      notifier(elements[i], connected);
+    for (let element, i = 0, length = elements.length; i < length; i++) {
+      element = elements[i];
+      if ('querySelectorAll' in element)
+        notifier(element, connected);
+    }
   };
 
   const query = options.query;
@@ -83,9 +82,8 @@ export default options => {
 
   const observer = notify(notifier, root, ShadowObserver, query);
 
-  if (query.length) {
+  if (query.length)
     parse(root.querySelectorAll(query));
-  }
 
   return { drop, flush, observer, parse };
 };
