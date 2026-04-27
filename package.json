@@ -1,6 +1,6 @@
 {
   "name": "qsa-observer",
-  "version": "3.0.2",
+  "version": "4.0.1",
   "description": "handle elements lifecycle through CSS selectors",
   "main": "./esm/index.js",
   "module": "./esm/index.js",
@@ -12,6 +12,12 @@
     "rollup:esm": "rollup --config rollup/esm.config.js",
     "size": "cat esm.js | brotli | wc -c"
   },
+  "files": [
+    "esm/",
+    "esm.js",
+    "README.md",
+    "LICENSE"
+  ],
   "keywords": [
     "querySelectorAll",
     "MutationObserver"
@@ -44,6 +50,7 @@
   },
   "homepage": "https://github.com/WebReflection/qsa-observer#readme",
   "dependencies": {
-    "element-notifier": "^2.0.0"
+    "element-notifier": "^2.0.3",
+    "shadow-observer": "^0.1.7"
   }
 }
